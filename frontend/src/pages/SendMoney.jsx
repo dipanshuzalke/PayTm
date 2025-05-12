@@ -1,4 +1,4 @@
-export const SendMoney = () => {
+export default function SendMoney () {
   return (
     <div class="flex justify-center h-screen bg-gray-100">
       <div className="h-full flex flex-col justify-center">
