@@ -7,12 +7,31 @@ export const Users = () => {
   // Replace with backend call
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState("");
+  const [currentUserId, setCurrentUserId] = useState(null);
   const navigate = useNavigate();
 
+  // Fetch current user ID
   useEffect(() => {
-    axios.get("http://localhost:3000/api/v1/user/bulk?filter=" + filter).then((res) => {
-      setUsers(res.data.user);
-    });
+    axios
+      .get("http://localhost:3000/api/v1/user/me", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => {
+        setCurrentUserId(res.data.id);
+      })
+      .catch((err) => {
+        console.error("Error fetching current user:", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/v1/user/bulk?filter=" + filter)
+      .then((res) => {
+        setUsers(res.data.user);
+      });
   }, [filter]);
 
   return (
@@ -27,9 +46,11 @@ export const Users = () => {
         ></input>
       </div>
       <div>
-        {users.map((user) => (
-          <User user={user}  key={user._id} navigate={navigate}/>
-        ))}
+        {users
+          .filter((user) => user._id !== currentUserId) // 👈 hide logged-in user
+          .map((user) => (
+            <User user={user} key={user._id} navigate={navigate} />
+          ))}
       </div>
     </>
   );
@@ -52,10 +73,20 @@ function User({ user, navigate }) {
       </div>
 
       <div className="flex flex-col justify-center h-ful">
-        <Button label={"Send Money"} onClick={() => {
-          // navigate to send money page
-          navigate("/send?id=" + user._id + "&name=" + user.firstName + " " + user.lastName);
-        }}/>
+        <Button
+          label={"Send Money"}
+          onClick={() => {
+            // navigate to send money page
+            navigate(
+              "/send?id=" +
+                user._id +
+                "&name=" +
+                user.firstName +
+                " " +
+                user.lastName
+            );
+          }}
+        />
       </div>
     </div>
   );

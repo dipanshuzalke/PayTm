@@ -4,6 +4,7 @@ const zod = require("zod");
 const { User, Account } = require("../db");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config");
+const { authMiddleware } = require("../middleware");
 
 const signupBody = zod.object({
   username: zod.string(),
@@ -56,40 +57,42 @@ router.post("/signup", async (req, res) => {
   });
 });
 
-
 const signinBody = zod.object({
-    username: zod.string(),
-	password: zod.string()
-})
+  username: zod.string(),
+  password: zod.string(),
+});
 
 router.post("/signin", async (req, res) => {
-    const { success } = signinBody.safeParse(req.body)
-    if (!success) {
-        return res.status(411).json({
-            message: "Incorrect inputs"
-        })
-    }
-
-    const user = await User.findOne({
-        username: req.body.username,
-        password: req.body.password
+  const { success } = signinBody.safeParse(req.body);
+  if (!success) {
+    return res.status(411).json({
+      message: "Incorrect inputs",
     });
+  }
 
-    if (user) {
-        const token = jwt.sign({
-            userId: user._id
-        }, JWT_SECRET);
-  
-        res.json({
-            token: token
-        })
-        return;
-    }
+  const user = await User.findOne({
+    username: req.body.username,
+    password: req.body.password,
+  });
 
-    res.status(411).json({
-        message: "Error while logging in"
-    })
-})
+  if (user) {
+    const token = jwt.sign(
+      {
+        userId: user._id,
+      },
+      JWT_SECRET
+    );
+
+    res.json({
+      token: token,
+    });
+    return;
+  }
+
+  res.status(411).json({
+    message: "Error while logging in",
+  });
+});
 
 const updateUserSchema = zod.object({
   password: zod.string().min(6),
@@ -129,6 +132,26 @@ router.put("/", async (req, res) => {
   });
 });
 
+router.get("/me", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const account = await Account.findOne({ userId: req.userId });
+
+    res.json({
+      id: user._id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      balance: account?.balance || 0,
+    });
+  } catch (err) {
+    console.error("Error fetching user data:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 router.get("/bulk", async (req, res) => {
   const filter = req.query.filter || "";
 
@@ -155,6 +178,11 @@ router.get("/bulk", async (req, res) => {
       _id: user._id,
     })),
   });
+});
+
+router.post('/logout', (req, res) => {
+  // In stateless JWT, logout is handled by clearing token on client
+  return res.status(200).json({ message: "Logged out successfully" });
 });
 
 module.exports = router;
