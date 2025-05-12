@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 
 mongoose
-  .connect("mongodb+srv://deepzalke123:05eGnluCI6y5LkHy@cluster0.3n9c6m8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected..."))
-  .catch((err) => console.log(err));
+  .catch((err) => console.log("MongoDB connection error:", err));
 
 const userSchema = new mongoose.Schema({
   username: {
