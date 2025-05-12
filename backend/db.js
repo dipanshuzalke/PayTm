@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 mongoose
-  .connect("mongodb://localhost:27017/paytm")
+  .connect("mongodb+srv://deepzalke123:05eGnluCI6y5LkHy@cluster0.3n9c6m8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
   .then(() => console.log("MongoDB connected..."))
   .catch((err) => console.log(err));
