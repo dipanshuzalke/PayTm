@@ -6,7 +6,7 @@ export default function Appbar () {
   
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:3000/api/v1/user/logout', {}, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/logout`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }

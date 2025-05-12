@@ -6,7 +6,7 @@ export default function Balance({ value }) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/v1/user/me", {
+      .get(`${import.meta.env.VITE_API_URL}/api/v1/user/me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // or however you store your token
         },

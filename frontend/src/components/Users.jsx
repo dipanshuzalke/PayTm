@@ -13,7 +13,7 @@ export const Users = () => {
   // Fetch current user ID
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/v1/user/me", {
+      .get(`${import.meta.env.VITE_API_URL}/api/v1/user/me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -28,7 +28,7 @@ export const Users = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/v1/user/bulk?filter=" + filter)
+      .get(`${import.meta.env.VITE_API_URL}/api/v1/user/bulk?filter=` + filter)
       .then((res) => {
         setUsers(res.data.user);
       });

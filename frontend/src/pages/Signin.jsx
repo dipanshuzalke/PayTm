@@ -35,7 +35,7 @@ export default function Signin() {
               label={"Sign in"}
               onClick={async () => {
                 await axios
-                  .post("http://localhost:3000/api/v1/user/signin", {
+                  .post(`${import.meta.env.VITE_API_URL}/api/v1/user/signin`, {
                     username,
                     password,
                   })

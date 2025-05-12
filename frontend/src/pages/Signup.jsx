@@ -51,7 +51,7 @@ export default function Signup() {
               label={"Sign up"}
               onClick={async () => {
                 await axios
-                  .post("http://localhost:3000/api/v1/user/signup", {
+                  .post(`${import.meta.env.VITE_API_URL}/api/v1/user/signup`, {
                     firstName,
                     lastName,
                     username,

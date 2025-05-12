@@ -47,7 +47,7 @@ export default function SendMoney() {
                 onClick={() => {
                   axios
                     .post(
-                      "http://localhost:3000/api/v1/account/transfer",
+                      `${import.meta.env.VITE_API_URL}/api/v1/account/transfer`,
                       {
                         to: id,
                         amount,
